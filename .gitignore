@@ -61,3 +61,7 @@ backend/uploads/*
 # Windows
 desktop.ini
 Thumbs.db
+# DocuMind runtime data
+backend/documind.db
+backend/rag_indexes/
+backend/uploads/

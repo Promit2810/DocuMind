@@ -5,6 +5,7 @@ import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Dashboard from "./pages/Dashboard";
 import Documents from "./pages/Documents";
+import Chat from "./pages/Chat";
 
 import DocumentScene from "./components/DocumentScene";
 import FeatureCards from "./components/FeatureCards";
@@ -428,6 +429,7 @@ function App() {
           path="/documents"
           element={<Documents />}
         />
+        <Route path="/chat" element={<Chat />} />
 
       </Routes>
 

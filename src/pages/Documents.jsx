@@ -1,9 +1,9 @@
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import "../index.css";
 
-const documents = [
+const defaultDocuments = [
   {
     name: "Research_Paper.pdf",
     type: "PDF",
@@ -25,16 +25,131 @@ const documents = [
 ];
 
 function Documents() {
+  const fileInputRef = useRef(null);
+
+  const [documents, setDocuments] = useState(() => {
+    const savedDocuments = localStorage.getItem("documind_documents");
+
+    if (savedDocuments) {
+      try {
+        return JSON.parse(savedDocuments);
+      } catch {
+        return defaultDocuments;
+      }
+    }
+
+    return defaultDocuments;
+  });
+
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("All");
+  const [uploading, setUploading] = useState(false);
+  const [message, setMessage] = useState("");
+
+  useEffect(() => {
+    localStorage.setItem(
+      "documind_documents",
+      JSON.stringify(documents)
+    );
+  }, [documents]);
+
+  const openFilePicker = () => {
+    if (!uploading) {
+      fileInputRef.current?.click();
+    }
+  };
+
+  const handleFileChange = async (event) => {
+    const file = event.target.files?.[0];
+
+    if (!file) {
+      return;
+    }
+
+    const extension = `.${file.name.split(".").pop().toLowerCase()}`;
+
+    if (![".pdf", ".docx", ".txt"].includes(extension)) {
+      setMessage("Only PDF, DOCX, and TXT files are supported.");
+      event.target.value = "";
+      return;
+    }
+
+    setUploading(true);
+    setMessage("");
+
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      const response = await fetch(
+        "http://127.0.0.1:8000/api/documents/upload",
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          data.detail || "Upload failed."
+        );
+      }
+
+      const uploadedDocument = {
+        name: data.filename || file.name,
+        type:
+          data.file_type ||
+          extension.replace(".", "").toUpperCase(),
+        pages: data.pages || "—",
+        updated: "Just now",
+      };
+
+      setDocuments((previousDocuments) => [
+        uploadedDocument,
+        ...previousDocuments.filter(
+          (document) =>
+            document.name !== uploadedDocument.name
+        ),
+      ]);
+
+      setMessage(
+        `✓ ${uploadedDocument.name} uploaded successfully.`
+      );
+    } catch (error) {
+      console.error("Upload error:", error);
+
+      setMessage(
+        `Upload failed: ${error.message}`
+      );
+    } finally {
+      setUploading(false);
+
+      // Allow selecting the same file again
+      event.target.value = "";
+    }
+  };
 
   const filteredDocuments = documents.filter((document) => {
-    const matchesSearch = document.name
+    const documentName =
+      document.name ||
+      document.filename ||
+      "";
+
+    const documentType =
+      document.type ||
+      document.file_type ||
+      "";
+
+    const matchesSearch = documentName
       .toLowerCase()
       .includes(search.toLowerCase());
 
     const matchesFilter =
-      filter === "All" || document.type === filter;
+      filter === "All" ||
+      documentType.toUpperCase() ===
+        filter.toUpperCase();
 
     return matchesSearch && matchesFilter;
   });
@@ -42,20 +157,26 @@ function Documents() {
   return (
     <div className="documents-page">
 
-      {/* ================= NAVBAR ================= */}
+      {/* HIDDEN FILE INPUT */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept=".pdf,.docx,.txt"
+        onChange={handleFileChange}
+        style={{ display: "none" }}
+      />
 
+      {/* NAVBAR */}
       <nav className="dashboard-nav">
-
         <Link
           to="/dashboard"
           className="dashboard-logo"
         >
-          <span className="logo-dot" />
+          <span className="logo-dot"></span>
           DocuMind
         </Link>
 
         <div className="dashboard-nav-right">
-
           <Link
             to="/dashboard"
             className="documents-back"
@@ -69,22 +190,15 @@ function Documents() {
           >
             Log out
           </Link>
-
         </div>
-
       </nav>
 
-
-      {/* ================= MAIN ================= */}
-
+      {/* MAIN */}
       <main className="documents-main">
 
-        {/* ================= HEADER ================= */}
-
+        {/* HEADER */}
         <section className="documents-page-header">
-
           <div>
-
             <span className="section-tag">
               DOCUMENT LIBRARY / 02
             </span>
@@ -98,31 +212,55 @@ function Documents() {
               Explore your uploaded documents and access
               the information you need.
             </p>
-
           </div>
 
           <motion.button
             className="dashboard-primary-button"
-            whileHover={{
-              y: -4,
-              scale: 1.03,
-            }}
-            whileTap={{
-              scale: 0.97,
-            }}
+            onClick={openFilePicker}
+            disabled={uploading}
+            whileHover={
+              uploading
+                ? {}
+                : {
+                    y: -4,
+                    scale: 1.03,
+                  }
+            }
+            whileTap={
+              uploading
+                ? {}
+                : {
+                    scale: 0.97,
+                  }
+            }
           >
-            + Upload document
+            {uploading
+              ? "Uploading..."
+              : "+ Upload document"}
           </motion.button>
-
         </section>
 
+        {/* MESSAGE */}
+        {message && (
+          <motion.div
+            className="document-upload-message"
+            initial={{
+              opacity: 0,
+              y: -10,
+            }}
+            animate={{
+              opacity: 1,
+              y: 0,
+            }}
+          >
+            {message}
+          </motion.div>
+        )}
 
-        {/* ================= SEARCH + FILTER ================= */}
-
+        {/* SEARCH + FILTER */}
         <section className="documents-toolbar">
 
           <div className="document-search">
-
             <span>⌕</span>
 
             <input
@@ -133,7 +271,6 @@ function Documents() {
                 setSearch(event.target.value)
               }
             />
-
           </div>
 
           <select
@@ -154,17 +291,17 @@ function Documents() {
             <option value="DOCX">
               DOCX
             </option>
+
+            <option value="TXT">
+              TXT
+            </option>
           </select>
 
         </section>
 
-
-        {/* ================= DOCUMENT COUNT ================= */}
-
+        {/* LIBRARY HEADING */}
         <div className="documents-library-heading">
-
           <div>
-
             <span className="section-tag">
               LIBRARY
             </span>
@@ -172,7 +309,6 @@ function Documents() {
             <h2>
               All documents
             </h2>
-
           </div>
 
           <span className="document-count">
@@ -181,92 +317,99 @@ function Documents() {
               ? "document"
               : "documents"}
           </span>
-
         </div>
 
-
-        {/* ================= DOCUMENT LIST ================= */}
-
+        {/* DOCUMENT LIST */}
         <section className="documents-library-list">
 
           {filteredDocuments.length > 0 ? (
 
-            filteredDocuments.map((document, index) => (
+            filteredDocuments.map(
+              (document, index) => {
 
-              <motion.article
-                key={document.name}
-                className="library-document-card"
+                const documentName =
+                  document.name ||
+                  document.filename ||
+                  "Untitled document";
 
-                initial={{
-                  opacity: 0,
-                  y: 30,
-                }}
+                const documentType =
+                  document.type ||
+                  document.file_type ||
+                  "FILE";
 
-                animate={{
-                  opacity: 1,
-                  y: 0,
-                }}
+                const pageText =
+                  document.pages !== undefined
+                    ? `${document.pages} pages`
+                    : "Processing";
 
-                transition={{
-                  duration: 0.5,
-                  delay: index * 0.1,
-                }}
+                const updatedText =
+                  document.updated ||
+                  "Just now";
 
-                whileHover={{
-                  y: -5,
-                  scale: 1.01,
-                }}
-              >
+                return (
+                  <motion.article
+                    key={`${documentName}-${index}`}
+                    className="library-document-card"
 
-                {/* DOCUMENT ICON */}
+                    initial={{
+                      opacity: 0,
+                      y: 30,
+                    }}
 
-                <div className="library-document-icon">
-                  <span>◇</span>
-                </div>
+                    animate={{
+                      opacity: 1,
+                      y: 0,
+                    }}
 
+                    transition={{
+                      duration: 0.5,
+                      delay: index * 0.1,
+                    }}
 
-                {/* DOCUMENT INFORMATION */}
+                    whileHover={{
+                      y: -5,
+                      scale: 1.01,
+                    }}
+                  >
 
-                <div className="library-document-info">
+                    <div className="library-document-icon">
+                      <span>◇</span>
+                    </div>
 
-                  <strong>
-                    {document.name}
-                  </strong>
+                    <div className="library-document-info">
+                      <strong>
+                        {documentName}
+                      </strong>
 
-                  <span>
-                    {document.type} · {document.pages} pages
-                  </span>
+                      <span>
+                        {documentType.toUpperCase()}
+                        {" · "}
+                        {pageText}
+                      </span>
+                    </div>
 
-                </div>
+                    <div className="library-document-date">
+                      {updatedText}
+                    </div>
 
+                    <motion.button
+                      className="library-document-action"
+                      whileHover={{
+                        rotate: 8,
+                        scale: 1.1,
+                      }}
+                      whileTap={{
+                        scale: 0.9,
+                      }}
+                      onClick={openFilePicker}
+                    >
+                      ↗
+                    </motion.button>
 
-                {/* UPDATED TIME */}
-
-                <div className="library-document-date">
-                  {document.updated}
-                </div>
-
-
-                {/* OPEN DOCUMENT */}
-
-                <motion.button
-                  className="library-document-action"
-
-                  whileHover={{
-                    rotate: 8,
-                    scale: 1.1,
-                  }}
-
-                  whileTap={{
-                    scale: 0.9,
-                  }}
-                >
-                  ↗
-                </motion.button>
-
-              </motion.article>
-
-            ))
+                  </motion.article>
+                );
+              }
+            )
 
           ) : (
 
@@ -298,26 +441,21 @@ function Documents() {
 
         </section>
 
-
-        {/* ================= UPLOAD AREA ================= */}
-
+        {/* UPLOAD AREA */}
         <section className="document-upload-area">
 
           <div className="upload-orb">
-
             <motion.span
               animate={{
                 rotate: 360,
                 scale: [1, 1.08, 1],
               }}
-
               transition={{
                 rotate: {
                   duration: 8,
                   repeat: Infinity,
                   ease: "linear",
                 },
-
                 scale: {
                   duration: 2,
                   repeat: Infinity,
@@ -327,12 +465,9 @@ function Documents() {
             >
               +
             </motion.span>
-
           </div>
 
-
           <div>
-
             <span className="section-tag">
               EXPAND YOUR KNOWLEDGE
             </span>
@@ -345,29 +480,36 @@ function Documents() {
               Upload a PDF, DOCX, or text file to expand
               your DocuMind knowledge space.
             </p>
-
           </div>
-
 
           <motion.button
             className="upload-secondary-button"
-
-            whileHover={{
-              y: -3,
-              scale: 1.02,
-            }}
-
-            whileTap={{
-              scale: 0.97,
-            }}
+            onClick={openFilePicker}
+            disabled={uploading}
+            whileHover={
+              uploading
+                ? {}
+                : {
+                    y: -3,
+                    scale: 1.02,
+                  }
+            }
+            whileTap={
+              uploading
+                ? {}
+                : {
+                    scale: 0.97,
+                  }
+            }
           >
-            Upload document ↗
+            {uploading
+              ? "Uploading..."
+              : "Upload document ↗"}
           </motion.button>
 
         </section>
 
       </main>
-
     </div>
   );
 }
