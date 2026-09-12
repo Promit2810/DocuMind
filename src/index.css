@@ -3005,33 +3005,112 @@ button {
 }
 
 
+.dashboard-nav-links {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dashboard-nav-link {
+  padding: 8px 18px;
+  border-radius: 9999px;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: rgba(245, 243, 251, 0.65);
+  text-decoration: none;
+  border: 1px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.dashboard-nav-link:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.dashboard-nav-link.active {
+  color: #f7f5ff;
+  background: rgba(139, 92, 246, 0.16);
+  border-color: rgba(139, 92, 246, 0.35);
+  box-shadow: 0 0 16px rgba(139, 92, 246, 0.18);
+}
+
 .dashboard-nav-right {
   display: flex;
   align-items: center;
-  gap: 28px;
+  gap: 14px;
 }
 
-
-.dashboard-user {
-  color: rgba(245, 243, 251, 0.62);
-  font-size: 14px;
+.dashboard-user-chip {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 5px 14px 5px 6px;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  backdrop-filter: blur(10px);
 }
 
-
-.dashboard-logout {
-  color: #a78bfa;
-  text-decoration: none;
-  font-size: 14px;
-
-  transition:
-    color 0.25s ease,
-    transform 0.25s ease;
-}
-
-
-.dashboard-logout:hover {
+.dashboard-user-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #8b5cf6, #6366f1);
   color: #ffffff;
+  font-size: 12px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 10px rgba(139, 92, 246, 0.4);
+}
+
+.dashboard-user-name {
+  font-size: 13.5px;
+  font-weight: 500;
+  color: rgba(245, 243, 251, 0.9);
+  max-width: 140px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dashboard-logout,
+.dashboard-logout-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 16px;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  color: #c4b5fd;
+  font-size: 13px;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  outline: none;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.dashboard-logout:hover,
+.dashboard-logout-btn:hover {
+  background: rgba(239, 68, 68, 0.12);
+  border-color: rgba(239, 68, 68, 0.32);
+  color: #fca5a5;
   transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(239, 68, 68, 0.2);
+}
+
+.dashboard-logout svg,
+.dashboard-logout-btn svg {
+  transition: transform 0.2s ease;
+}
+
+.dashboard-logout:hover svg,
+.dashboard-logout-btn:hover svg {
+  transform: translateX(1px);
 }
 
 
@@ -3838,12 +3917,21 @@ button {
     border-radius: 17px;
   }
 
-  .dashboard-user {
+  .dashboard-user,
+  .dashboard-user-name {
+    display: none;
+  }
+
+  .dashboard-user-chip {
+    padding: 3px;
+  }
+
+  .dashboard-nav-links {
     display: none;
   }
 
   .dashboard-nav-right {
-    gap: 12px;
+    gap: 10px;
   }
 
   .dashboard-main {
@@ -3997,17 +4085,24 @@ button {
   gap: 24px;
 }
 
-.documents-back,
-.dashboard-logout {
+.documents-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   color: #aaa5b7;
   text-decoration: none;
   font-size: 13px;
   transition: 0.25s ease;
 }
 
-.documents-back:hover,
-.dashboard-logout:hover {
+.documents-back:hover {
   color: #ffffff;
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.16);
 }
 
 /* =========================================================
@@ -5099,5 +5194,560 @@ button {
 
   .chat-input-area {
     padding: 15px;
+  }
+}
+/* ================= CHAT SOURCES FIX ================= */
+
+.chat-sources {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.chat-sources-title {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #8f8a9f;
+  margin-right: 4px;
+}
+
+.chat-source {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 10px;
+  border: 1px solid rgba(139, 92, 246, 0.28);
+  border-radius: 999px;
+  background: rgba(124, 58, 237, 0.08);
+  color: #b89cff;
+  font-size: 11px;
+  line-height: 1;
+  white-space: nowrap;
+}
+/* =========================================================
+   DOCUMIND CHAT MESSAGE LAYOUT FIX
+   ========================================================= */
+
+.chat-messages {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 32px 36px;
+  overflow-y: auto;
+}
+
+/* Individual message */
+.chat-message {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* ---------------- USER MESSAGE ---------------- */
+
+.chat-message-user {
+  align-items: flex-end;
+}
+
+.chat-message-user .chat-message-label {
+  text-align: right;
+  color: #aaa4b8;
+}
+
+.chat-message-user .chat-message-text {
+  max-width: 70%;
+  padding: 14px 18px;
+  border: 1px solid rgba(139, 92, 246, 0.25);
+  border-radius: 16px 16px 4px 16px;
+  background: rgba(124, 58, 237, 0.12);
+  color: #f4f1fa;
+  line-height: 1.6;
+}
+
+/* ---------------- AI MESSAGE ---------------- */
+
+.chat-message-ai {
+  align-items: flex-start;
+}
+
+.chat-message-ai .chat-message-label {
+  text-align: left;
+  color: #a78bfa;
+}
+
+.chat-message-ai .chat-message-text {
+  max-width: 82%;
+  padding: 16px 20px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 4px 16px 16px 16px;
+  background: rgba(255, 255, 255, 0.025);
+  color: #f4f1fa;
+  line-height: 1.7;
+}
+
+/* ---------------- MESSAGE LABEL ---------------- */
+
+.chat-message-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+/* ---------------- SOURCES ---------------- */
+
+.chat-sources {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.chat-sources-title {
+  display: inline-block;
+  margin-right: 4px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #8f8a9f;
+}
+
+.chat-source {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 10px;
+  border: 1px solid rgba(139, 92, 246, 0.30);
+  border-radius: 999px;
+  background: rgba(124, 58, 237, 0.08);
+  color: #b89cff;
+  font-size: 10px;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+/* ---------------- LOADING MESSAGE ---------------- */
+
+.chat-loading {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 14px 18px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 4px 16px 16px 16px;
+  background: rgba(255, 255, 255, 0.025);
+  color: #aaa4b8;
+}
+
+.chat-loading span {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #9b6cff;
+  animation: chatLoadingDot 1.2s infinite ease-in-out;
+}
+
+.chat-loading span:nth-child(2) {
+  animation-delay: 0.15s;
+}
+
+.chat-loading span:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+@keyframes chatLoadingDot {
+  0%,
+  60%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.45;
+  }
+
+  30% {
+    transform: translateY(-4px);
+    opacity: 1;
+  }
+}
+
+/* ---------------- MOBILE ---------------- */
+
+@media (max-width: 768px) {
+  .chat-messages {
+    padding: 24px 18px;
+  }
+
+  .chat-message-user .chat-message-text,
+  .chat-message-ai .chat-message-text {
+    max-width: 90%;
+  }
+}
+/* =========================================================
+   FINAL AUTH NAVBAR FIX
+   ========================================================= */
+
+/* Authenticated navbar action container */
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+/* Dashboard link */
+.nav-actions .nav-dashboard {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+
+  padding: 10px 16px !important;
+
+  background: transparent !important;
+  color: #f3f0ff !important;
+
+  border: none !important;
+  border-radius: 10px !important;
+
+  font-size: 15px !important;
+  font-weight: 500 !important;
+  line-height: 1.2 !important;
+
+  text-decoration: none !important;
+  white-space: nowrap;
+
+  cursor: pointer;
+}
+
+/* Dashboard hover */
+.nav-actions .nav-dashboard:hover {
+  background: rgba(139, 85, 255, 0.12) !important;
+  color: #ffffff !important;
+}
+
+/* =========================================================
+   LOGOUT BUTTON
+   ========================================================= */
+
+.nav-actions button,
+.nav-actions .nav-logout,
+.nav-actions button.nav-signup {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  width: auto !important;
+  min-width: 88px !important;
+  height: 42px !important;
+  min-height: 42px !important;
+
+  padding: 10px 18px !important;
+  margin: 0 !important;
+
+  box-sizing: border-box !important;
+
+  background: rgba(255, 255, 255, 0.06) !important;
+  background-color: rgba(255, 255, 255, 0.06) !important;
+
+  color: #ffffff !important;
+
+  border: 1px solid rgba(255, 255, 255, 0.22) !important;
+  border-radius: 10px !important;
+
+  outline: none !important;
+
+  font-family: inherit !important;
+  font-size: 15px !important;
+  font-weight: 500 !important;
+  line-height: 1 !important;
+
+  text-align: center !important;
+  text-decoration: none !important;
+
+  opacity: 1 !important;
+  visibility: visible !important;
+
+  cursor: pointer !important;
+
+  box-shadow: none !important;
+
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease !important;
+}
+
+/* Logout hover */
+.nav-actions button:hover,
+.nav-actions .nav-logout:hover,
+.nav-actions button.nav-signup:hover {
+  background: rgba(139, 85, 255, 0.18) !important;
+  background-color: rgba(139, 85, 255, 0.18) !important;
+
+  color: #ffffff !important;
+
+  border-color: rgba(139, 104, 255, 0.5) !important;
+
+  transform: translateY(-1px);
+}
+
+/* Logout active */
+.nav-actions button:active,
+.nav-actions .nav-logout:active {
+  transform: translateY(0);
+}
+
+/* Make sure logout text itself is visible */
+.nav-actions button span,
+.nav-actions .nav-logout span {
+  color: #ffffff !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+/* =========================================================
+   DOCUMIND — FINAL AUTHENTICATION NAVBAR FIX
+   ========================================================= */
+
+/* Navbar action group */
+.nav-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 14px;
+}
+
+/* ---------------------------------------------------------
+   Dashboard link
+   --------------------------------------------------------- */
+
+.nav-actions .nav-dashboard {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  min-height: 42px !important;
+  padding: 10px 16px !important;
+  margin: 0 !important;
+
+  background: transparent !important;
+  color: #f3f0ff !important;
+
+  border: 1px solid transparent !important;
+  border-radius: 10px !important;
+
+  font-family: inherit !important;
+  font-size: 15px !important;
+  font-weight: 500 !important;
+  line-height: 1 !important;
+
+  text-decoration: none !important;
+  white-space: nowrap !important;
+
+  cursor: pointer !important;
+
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease !important;
+}
+
+.nav-actions .nav-dashboard:hover {
+  background: rgba(139, 85, 255, 0.12) !important;
+  color: #ffffff !important;
+  border-color: rgba(139, 104, 255, 0.2) !important;
+}
+
+
+/* ---------------------------------------------------------
+   LOGIN LINK
+   --------------------------------------------------------- */
+
+.nav-actions .nav-login {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  min-height: 42px !important;
+  padding: 10px 16px !important;
+  margin: 0 !important;
+
+  background: transparent !important;
+  color: #f3f0ff !important;
+
+  border: 1px solid transparent !important;
+  border-radius: 10px !important;
+
+  font-family: inherit !important;
+  font-size: 15px !important;
+  font-weight: 500 !important;
+  line-height: 1 !important;
+
+  text-decoration: none !important;
+  white-space: nowrap !important;
+
+  cursor: pointer !important;
+}
+
+.nav-actions .nav-login:hover {
+  background: rgba(139, 85, 255, 0.10) !important;
+  color: #ffffff !important;
+}
+
+
+/* ---------------------------------------------------------
+   GET STARTED
+   --------------------------------------------------------- */
+
+.nav-actions .nav-signup {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  min-height: 42px !important;
+  padding: 10px 18px !important;
+
+  border-radius: 10px !important;
+
+  white-space: nowrap !important;
+}
+
+
+/* ---------------------------------------------------------
+   LOGOUT BUTTON
+   --------------------------------------------------------- */
+
+/*
+   IMPORTANT:
+   This specifically overrides browser/default button
+   styling that was producing the white rectangle.
+*/
+
+.nav-actions > button {
+  appearance: none !important;
+  -webkit-appearance: none !important;
+
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  width: auto !important;
+  min-width: 88px !important;
+  max-width: none !important;
+
+  height: 42px !important;
+  min-height: 42px !important;
+  max-height: 42px !important;
+
+  padding: 10px 18px !important;
+  margin: 0 !important;
+
+  box-sizing: border-box !important;
+
+  background: rgba(255, 255, 255, 0.05) !important;
+  background-color: rgba(255, 255, 255, 0.05) !important;
+
+  color: #ffffff !important;
+
+  border: 1px solid rgba(255, 255, 255, 0.20) !important;
+  border-radius: 10px !important;
+
+  outline: none !important;
+
+  font-family: inherit !important;
+  font-size: 15px !important;
+  font-weight: 500 !important;
+  line-height: 1 !important;
+
+  text-align: center !important;
+  text-decoration: none !important;
+
+  opacity: 1 !important;
+  visibility: visible !important;
+
+  cursor: pointer !important;
+
+  box-shadow: none !important;
+
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease !important;
+}
+
+
+/* Logout hover */
+
+.nav-actions > button:hover {
+  background: rgba(139, 85, 255, 0.18) !important;
+  background-color: rgba(139, 85, 255, 0.18) !important;
+
+  color: #ffffff !important;
+
+  border-color: rgba(139, 104, 255, 0.50) !important;
+
+  transform: translateY(-1px) !important;
+}
+
+
+/* Logout active */
+
+.nav-actions > button:active {
+  transform: translateY(0) !important;
+}
+
+
+/* Logout focus */
+
+.nav-actions > button:focus,
+.nav-actions > button:focus-visible {
+  outline: none !important;
+
+  border-color: rgba(139, 104, 255, 0.60) !important;
+
+  box-shadow:
+    0 0 0 3px rgba(139, 104, 255, 0.12) !important;
+}
+
+
+/* Make absolutely sure text inside the button is visible */
+
+.nav-actions > button *,
+.nav-actions > button span {
+  color: #ffffff !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+
+/* ---------------------------------------------------------
+   MOBILE
+   --------------------------------------------------------- */
+
+@media (max-width: 768px) {
+
+  .nav-actions {
+    gap: 10px !important;
+  }
+
+  .nav-actions .nav-dashboard,
+  .nav-actions .nav-login {
+    min-height: 40px !important;
+    padding: 9px 12px !important;
+    font-size: 14px !important;
+  }
+
+  .nav-actions > button {
+    min-width: 78px !important;
+    height: 40px !important;
+    min-height: 40px !important;
+    max-height: 40px !important;
+
+    padding: 9px 13px !important;
+
+    font-size: 14px !important;
   }
 }

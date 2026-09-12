@@ -1,7 +1,6 @@
 import { Canvas, useFrame } from "@react-three/fiber";
 import { Float, Environment, RoundedBox } from "@react-three/drei";
 import { useRef } from "react";
-import * as THREE from "three";
 
 function Document() {
   const group = useRef();
@@ -192,18 +191,16 @@ function AIOrb() {
   );
 }
 
+const PARTICLE_COUNT = 70;
+const PARTICLE_POSITIONS = new Float32Array(PARTICLE_COUNT * 3);
+for (let i = 0; i < PARTICLE_COUNT; i++) {
+  PARTICLE_POSITIONS[i * 3] = (Math.sin(i * 99) * 0.5) * 8;
+  PARTICLE_POSITIONS[i * 3 + 1] = (Math.cos(i * 33) * 0.5) * 6;
+  PARTICLE_POSITIONS[i * 3 + 2] = (Math.sin(i * 17) * 0.5) * 3;
+}
+
 function Particles() {
   const points = useRef();
-
-  const particleCount = 70;
-
-  const positions = new Float32Array(particleCount * 3);
-
-  for (let i = 0; i < particleCount; i++) {
-    positions[i * 3] = (Math.random() - 0.5) * 8;
-    positions[i * 3 + 1] = (Math.random() - 0.5) * 6;
-    positions[i * 3 + 2] = (Math.random() - 0.5) * 3;
-  }
 
   useFrame((state) => {
     const t = state.clock.getElapsedTime();
@@ -219,8 +216,8 @@ function Particles() {
       <bufferGeometry>
         <bufferAttribute
           attach="attributes-position"
-          count={particleCount}
-          array={positions}
+          count={PARTICLE_COUNT}
+          array={PARTICLE_POSITIONS}
           itemSize={3}
         />
       </bufferGeometry>

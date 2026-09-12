@@ -161,6 +161,21 @@ def clean_text(text: str) -> str:
     text = text.replace("\r\n", "\n")
     text = text.replace("\r", "\n")
     text = text.replace("\t", " ")
+    text = text.replace("\xa0", " ")
+    text = text.replace("\ufffd", "")
+
+    # PDF font extraction artifacts
+    text = re.sub(r"\?_([–—-])\?_", r" \1 ", text)
+    text = text.replace("?_??_", "–")
+    text = text.replace("?_", " ")
+    text = text.replace(" ?? ", " – ")
+    text = text.replace("?", "–")
+    text = text.replace("?", '"')
+    text = text.replace("?", '"')
+    text = text.replace("?", "'")
+    text = text.replace("?", "'")
+    text = text.replace("-", "• ")
+    text = text.replace("", "")
 
     # Normalize spaces without destroying new lines
     text = re.sub(r"[ ]{2,}", " ", text)
@@ -906,6 +921,23 @@ def content_boost(
         if section.upper() == "CONCLUSION":
             boost += 1.50
 
+    # ========================================================
+    # IDENTITY / CONTACT / RESUME INFO
+    # ========================================================
+
+    contact_keywords = [
+        "who is", "who wrote", "candidate", "author", "whose", "name",
+        "contact", "email", "phone", "linkedin", "github", "address"
+    ]
+    q_lower = question.lower()
+    if any(k in q_lower for k in contact_keywords):
+        contact_markers = [
+            "@", "linkedin", "github", "+91", "phone", "email",
+            "curriculum vitae", "resume", "portfolio"
+        ]
+        if any(marker in text_lower for marker in contact_markers):
+            boost += 1.50
+
     return boost
 
 
@@ -1401,6 +1433,20 @@ def retrieve_relevant_chunks(
         question
     )
 
+    lab_sections = {
+        "AIM", "OBJECTIVE", "OBJECTIVES", "PURPOSE", "THEORY",
+        "ALGORITHM", "PROCEDURE", "METHODOLOGY", "IMPLEMENTATION",
+        "EXPERIMENT", "RESULT", "RESULTS", "OUTPUT", "CONCLUSION",
+    }
+
+    distinct_lab_sections = {
+        chunk.get("section", "GENERAL").upper()
+        for chunk in chunks
+        if chunk.get("section", "GENERAL").upper() in lab_sections
+    }
+
+    is_lab_document = len(distinct_lab_sections) >= 2
+
     # ========================================================
     # SCORE EACH CANDIDATE
     # ========================================================
@@ -1484,162 +1530,167 @@ def retrieve_relevant_chunks(
         )
 
         # ====================================================
-        # BASE SCORE
+        # SCORING
         # ====================================================
 
-        final_score = 0.0
+        if not is_lab_document:
+            # For general documents (resumes, contracts, manuals, reports),
+            # do not penalize GENERAL sections or apply lab experiment heuristics.
+            final_score = (semantic * 0.70) + (lexical * 0.80) + (boost * 0.50)
+        else:
+            final_score = 0.0
 
-        # Semantic relevance
-        final_score += (
-            semantic * 0.45
-        )
+            # Semantic relevance
+            final_score += (
+                semantic * 0.45
+            )
 
-        # Keyword relevance
-        final_score += (
-            lexical * 1.00
-        )
+            # Keyword relevance
+            final_score += (
+                lexical * 1.00
+            )
 
-        # Section relevance
-        final_score += sec_score
+            # Section relevance
+            final_score += sec_score
 
-        # Content-specific boost
-        final_score += boost
+            # Content-specific boost
+            final_score += boost
 
-        # Penalties
-        final_score += front_penalty
-        final_score += generic_penalty
+            # Penalties
+            final_score += front_penalty
+            final_score += generic_penalty
 
-        # ====================================================
-        # EXTRA QUESTION-TYPE SAFETY
-        # ====================================================
+            # ====================================================
+            # EXTRA QUESTION-TYPE SAFETY (Lab documents only)
+            # ====================================================
 
-        # ----------------------------------------------------
-        # AIM
-        # ----------------------------------------------------
+            # ----------------------------------------------------
+            # AIM
+            # ----------------------------------------------------
 
-        if q_type == "aim":
+            if q_type == "aim":
 
-            if section.upper() == "AIM":
-                final_score += 1.50
+                if section.upper() == "AIM":
+                    final_score += 1.50
 
-            elif section.upper() in {
-                "OBJECTIVE",
-                "OBJECTIVES",
-                "PURPOSE",
-            }:
-                final_score += 1.20
+                elif section.upper() in {
+                    "OBJECTIVE",
+                    "OBJECTIVES",
+                    "PURPOSE",
+                }:
+                    final_score += 1.20
 
-            elif section.upper() in {
-                "THEORY",
-                "ALGORITHM",
-                "PROCEDURE",
-                "METHODOLOGY",
-                "RESULT",
-                "RESULTS",
-                "OUTPUT",
-                "CONCLUSION",
-            }:
-                final_score -= 1.00
+                elif section.upper() in {
+                    "THEORY",
+                    "ALGORITHM",
+                    "PROCEDURE",
+                    "METHODOLOGY",
+                    "RESULT",
+                    "RESULTS",
+                    "OUTPUT",
+                    "CONCLUSION",
+                }:
+                    final_score -= 1.00
 
-        # ----------------------------------------------------
-        # THEORY
-        # ----------------------------------------------------
+            # ----------------------------------------------------
+            # THEORY
+            # ----------------------------------------------------
 
-        elif q_type == "theory":
+            elif q_type == "theory":
 
-            if section.upper() == "THEORY":
-                final_score += 2.00
+                if section.upper() == "THEORY":
+                    final_score += 2.00
 
-            elif section.upper() == "GENERAL":
-                final_score -= 1.50
+                elif section.upper() == "GENERAL":
+                    final_score -= 1.50
 
-            elif section.upper() == "AIM":
-                final_score -= 1.00
+                elif section.upper() == "AIM":
+                    final_score -= 1.00
 
-        # ----------------------------------------------------
-        # ALGORITHM
-        # ----------------------------------------------------
+            # ----------------------------------------------------
+            # ALGORITHM
+            # ----------------------------------------------------
 
-        elif q_type == "algorithm":
+            elif q_type == "algorithm":
 
-            if section.upper() == "ALGORITHM":
-                final_score += 2.00
+                if section.upper() == "ALGORITHM":
+                    final_score += 2.00
 
-            elif section.upper() == "PROCEDURE":
-                final_score += 1.50
+                elif section.upper() == "PROCEDURE":
+                    final_score += 1.50
 
-            elif section.upper() == "GENERAL":
-                final_score -= 1.20
+                elif section.upper() == "GENERAL":
+                    final_score -= 1.20
 
-        # ----------------------------------------------------
-        # METHODOLOGY
-        # ----------------------------------------------------
+            # ----------------------------------------------------
+            # METHODOLOGY
+            # ----------------------------------------------------
 
-        elif q_type == "methodology":
+            elif q_type == "methodology":
 
-            if section.upper() == "METHODOLOGY":
-                final_score += 2.00
+                if section.upper() == "METHODOLOGY":
+                    final_score += 2.00
 
-            elif section.upper() == "IMPLEMENTATION":
-                final_score += 1.50
+                elif section.upper() == "IMPLEMENTATION":
+                    final_score += 1.50
 
-            elif section.upper() == "PROCEDURE":
-                final_score += 1.20
+                elif section.upper() == "PROCEDURE":
+                    final_score += 1.20
 
-            elif section.upper() == "GENERAL":
-                final_score -= 1.20
+                elif section.upper() == "GENERAL":
+                    final_score -= 1.20
 
-        # ----------------------------------------------------
-        # RESULT
-        # ----------------------------------------------------
+            # ----------------------------------------------------
+            # RESULT
+            # ----------------------------------------------------
 
-        elif q_type == "result":
+            elif q_type == "result":
 
-            if section.upper() in {
-                "RESULT",
-                "RESULTS",
-                "OUTPUT",
-            }:
-                final_score += 2.00
+                if section.upper() in {
+                    "RESULT",
+                    "RESULTS",
+                    "OUTPUT",
+                }:
+                    final_score += 2.00
 
-            elif section.upper() == "GENERAL":
-                final_score -= 1.20
+                elif section.upper() == "GENERAL":
+                    final_score -= 1.20
 
-            elif section.upper() == "THEORY":
-                final_score -= 0.80
+                elif section.upper() == "THEORY":
+                    final_score -= 0.80
 
-        # ----------------------------------------------------
-        # CONCLUSION
-        # ----------------------------------------------------
+            # ----------------------------------------------------
+            # CONCLUSION
+            # ----------------------------------------------------
 
-        elif q_type == "conclusion":
+            elif q_type == "conclusion":
 
-            if section.upper() == "CONCLUSION":
-                final_score += 2.00
+                if section.upper() == "CONCLUSION":
+                    final_score += 2.00
 
-            elif section.upper() in {
-                "RESULT",
-                "RESULTS",
-            }:
-                final_score += 0.80
+                elif section.upper() in {
+                    "RESULT",
+                    "RESULTS",
+                }:
+                    final_score += 0.80
 
-            elif section.upper() == "GENERAL":
-                final_score -= 1.20
+                elif section.upper() == "GENERAL":
+                    final_score -= 1.20
 
-        # ----------------------------------------------------
-        # COMPLEXITY
-        # ----------------------------------------------------
+            # ----------------------------------------------------
+            # COMPLEXITY
+            # ----------------------------------------------------
 
-        elif q_type == "complexity":
+            elif q_type == "complexity":
 
-            if section.upper() in {
-                "THEORY",
-                "ALGORITHM",
-            }:
-                final_score += 1.20
+                if section.upper() in {
+                    "THEORY",
+                    "ALGORITHM",
+                }:
+                    final_score += 1.20
 
-            elif section.upper() == "GENERAL":
-                final_score -= 0.80
+                elif section.upper() == "GENERAL":
+                    final_score -= 0.80
 
         # ====================================================
         # SAVE RESULT
