@@ -52,7 +52,7 @@ function Document() {
         position={[-0.15, 1.65, 0.105]}
       >
         <meshStandardMaterial
-          color="#7660e8"
+          color="#2563eb"
           roughness={0.6}
         />
       </RoundedBox>
@@ -115,7 +115,7 @@ function Document() {
         position={[0.62, -1.05, 0.12]}
       >
         <meshStandardMaterial
-          color="#9b82ee"
+          color="#38bdf8"
           roughness={0.5}
         />
       </RoundedBox>
@@ -124,9 +124,9 @@ function Document() {
       <mesh position={[-1.35, -1.55, 0.13]}>
         <sphereGeometry args={[0.09, 24, 24]} />
         <meshStandardMaterial
-          color="#7660e8"
-          emissive="#7660e8"
-          emissiveIntensity={0.35}
+          color="#0284c7"
+          emissive="#0284c7"
+          emissiveIntensity={0.45}
         />
       </mesh>
     </group>
@@ -150,9 +150,9 @@ function AIOrb() {
       <mesh>
         <sphereGeometry args={[0.58, 48, 48]} />
         <meshStandardMaterial
-          color="#8065df"
-          emissive="#5e43bd"
-          emissiveIntensity={0.32}
+          color="#2563eb"
+          emissive="#1d4ed8"
+          emissiveIntensity={0.38}
           roughness={0.3}
           metalness={0.2}
         />
@@ -162,9 +162,9 @@ function AIOrb() {
       <mesh rotation={[Math.PI / 2.8, 0.15, 0]}>
         <torusGeometry args={[0.78, 0.035, 12, 80]} />
         <meshStandardMaterial
-          color="#a991ff"
-          emissive="#8065df"
-          emissiveIntensity={0.25}
+          color="#60a5fa"
+          emissive="#2563eb"
+          emissiveIntensity={0.3}
           roughness={0.4}
         />
       </mesh>
@@ -173,7 +173,7 @@ function AIOrb() {
       <mesh rotation={[0.8, Math.PI / 3, 0]}>
         <torusGeometry args={[0.9, 0.025, 10, 80]} />
         <meshStandardMaterial
-          color="#6250aa"
+          color="#93c5fd"
           roughness={0.5}
         />
       </mesh>
@@ -182,9 +182,9 @@ function AIOrb() {
       <mesh position={[0, 0, 0.57]}>
         <sphereGeometry args={[0.13, 24, 24]} />
         <meshStandardMaterial
-          color="#eee9ff"
-          emissive="#c9baff"
-          emissiveIntensity={0.9}
+          color="#f0f9ff"
+          emissive="#bae6fd"
+          emissiveIntensity={0.95}
         />
       </mesh>
     </group>
@@ -223,7 +223,7 @@ function Particles() {
       </bufferGeometry>
 
       <pointsMaterial
-        color="#a99aff"
+        color="#93c5fd"
         size={0.025}
         transparent
         opacity={0.42}
@@ -247,14 +247,14 @@ function Scene() {
         position={[2, 1, 2]}
         intensity={18}
         distance={5}
-        color="#8166e8"
+        color="#3b82f6"
       />
 
       <pointLight
         position={[-3, -2, 2]}
-        intensity={8}
+        intensity={10}
         distance={5}
-        color="#8f82c4"
+        color="#60a5fa"
       />
 
       <Float
@@ -291,7 +291,6 @@ export default function DocumentScene() {
         }}
         dpr={[1, 1.5]}
       >
-        <color attach="background" args={["#15141d"]} />
 
         <Scene />
       </Canvas>

@@ -17,6 +17,8 @@ import Documents from "./pages/Documents";
 import Chat from "./pages/Chat";
 
 import DocumentScene from "./components/DocumentScene";
+import ThemeToggle from "./components/ThemeToggle";
+import { initTheme } from "./utils/theme";
 import FeatureCards from "./components/FeatureCards";
 import RagPipeline from "./components/RagPipeline";
 
@@ -193,6 +195,7 @@ function Landing() {
         </div>
 
         <div className="nav-actions">
+          <ThemeToggle />
           {user ? (
             <>
               <Link to="/dashboard" className="nav-dashboard">
@@ -420,6 +423,10 @@ function Landing() {
 // =========================
 
 function App() {
+  useEffect(() => {
+    initTheme();
+  }, []);
+
   return (
     <BrowserRouter>
       <Routes>

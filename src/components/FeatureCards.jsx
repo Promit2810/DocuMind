@@ -64,9 +64,9 @@ function SearchVisual() {
         animate={{
           scale: [1, 1.12, 1],
           boxShadow: [
-            "0 0 25px rgba(108, 92, 255, .25)",
-            "0 0 60px rgba(108, 92, 255, .55)",
-            "0 0 25px rgba(108, 92, 255, .25)",
+            "0 0 25px rgba(37, 99, 235, .25)",
+            "0 0 60px rgba(59, 130, 246, .55)",
+            "0 0 25px rgba(37, 99, 235, .25)",
           ],
         }}
         transition={{
@@ -169,7 +169,6 @@ function AIVisual() {
         }}
       />
 
-      <span className="ai-label">RAG</span>
     </div>
   );
 }

@@ -1,10 +1,6 @@
 import { useState } from "react";
-import {
-  Link,
-  useLocation,
-  useNavigate,
-} from "react-router-dom";
-
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import ThemeToggle from "../components/ThemeToggle";
 import { API_BASE_URL, saveAuth } from "../utils/auth";
 
 export default function Login() {
@@ -19,7 +15,6 @@ export default function Login() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-
     setError("");
 
     const trimmedEmail = email.trim();
@@ -32,19 +27,16 @@ export default function Login() {
     setLoading(true);
 
     try {
-      const response = await fetch(
-        `${API_BASE_URL}/api/auth/login`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            email: trimmedEmail,
-            password,
-          }),
-        }
-      );
+      const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: trimmedEmail,
+          password,
+        }),
+      });
 
       const data = await response.json();
 
@@ -54,20 +46,13 @@ export default function Login() {
         );
       }
 
-      saveAuth(
-        data.access_token,
-        data.user,
-        remember
-      );
+      saveAuth(data.access_token, data.user, remember);
 
-      const destination =
-        location.state?.from || "/dashboard";
-
+      const destination = location.state?.from || "/dashboard";
       navigate(destination, { replace: true });
     } catch (err) {
       setError(
-        err.message ||
-          "Something went wrong. Please try again."
+        err.message || "Something went wrong. Please try again."
       );
     } finally {
       setLoading(false);
@@ -76,27 +61,31 @@ export default function Login() {
 
   return (
     <div className="auth-page">
-      <Link to="/" className="auth-brand">
-        <span className="auth-brand-dot"></span>
-        <span>DocuMind</span>
-      </Link>
+      <div className="auth-top-bar">
+        <Link to="/" className="auth-brand">
+          <span className="auth-brand-dot"></span>
+          <span>DocuMind</span>
+        </Link>
+        <ThemeToggle />
+      </div>
 
       <main className="auth-container">
         <section className="auth-card">
+          {/* Segmented Auth Navigation */}
+          <div className="auth-tabs" role="tablist">
+            <Link to="/login" className="auth-tab active" role="tab" aria-selected="true">
+              Sign In
+            </Link>
+            <Link to="/signup" className="auth-tab" role="tab" aria-selected="false">
+              Create Account
+            </Link>
+          </div>
+
           <div className="auth-intro">
-            <span className="auth-eyebrow">
-              WELCOME BACK / 01
-            </span>
-
             <h1>
-              Sign in to your
-              <span> documents.</span>
+              Welcome <span>back.</span>
             </h1>
-
-            <p>
-              Continue exploring your documents with
-              AI-powered intelligence.
-            </p>
+            <p>Access your documents and intelligent knowledge space.</p>
           </div>
 
           {error && (
@@ -105,24 +94,16 @@ export default function Login() {
             </div>
           )}
 
-          <form
-            className="auth-form"
-            onSubmit={handleSubmit}
-          >
+          <form className="auth-form" onSubmit={handleSubmit}>
             <div className="form-field">
-              <label htmlFor="login-email">
-                Email
-              </label>
-
+              <label htmlFor="login-email">Email</label>
               <input
                 id="login-email"
                 type="email"
-                placeholder="you@example.com"
+                placeholder="name@example.com"
                 autoComplete="email"
                 value={email}
-                onChange={(event) =>
-                  setEmail(event.target.value)
-                }
+                onChange={(event) => setEmail(event.target.value)}
                 disabled={loading}
                 required
               />
@@ -130,21 +111,14 @@ export default function Login() {
 
             <div className="form-field">
               <div className="form-label-row">
-                <label htmlFor="login-password">
-                  Password
-                </label>
-
+                <label htmlFor="login-password">Password</label>
                 <button
                   type="button"
                   className="forgot-link"
-                  onClick={() =>
-                    setError(
-                      "Password reset is not available yet."
-                    )
-                  }
+                  onClick={() => setError("Password reset is not available yet.")}
                   disabled={loading}
                 >
-                  Forgot password?
+                  Forgot?
                 </button>
               </div>
 
@@ -154,9 +128,7 @@ export default function Login() {
                 placeholder="Enter your password"
                 autoComplete="current-password"
                 value={password}
-                onChange={(event) =>
-                  setPassword(event.target.value)
-                }
+                onChange={(event) => setPassword(event.target.value)}
                 disabled={loading}
                 required
               />
@@ -166,27 +138,15 @@ export default function Login() {
               <input
                 type="checkbox"
                 checked={remember}
-                onChange={(event) =>
-                  setRemember(event.target.checked)
-                }
+                onChange={(event) => setRemember(event.target.checked)}
                 disabled={loading}
               />
-
-              <span>Remember me</span>
+              <span>Remember me on this device</span>
             </label>
 
-            <button
-              type="submit"
-              className="auth-submit"
-              disabled={loading}
-            >
-              <span>
-                {loading ? "Signing in..." : "Sign in"}
-              </span>
-
-              <span className="submit-arrow">
-                {loading ? "…" : "↗"}
-              </span>
+            <button type="submit" className="auth-submit" disabled={loading}>
+              <span>{loading ? "Signing in..." : "Sign in to DocuMind"}</span>
+              <span className="submit-arrow">{loading ? "…" : "↗"}</span>
             </button>
           </form>
 
@@ -199,21 +159,12 @@ export default function Login() {
           <button
             type="button"
             className="google-button"
-            onClick={() =>
-              setError(
-                "Google authentication is not connected yet."
-              )
-            }
+            onClick={() => setError("Google authentication is not connected yet.")}
             disabled={loading}
           >
             <span className="google-icon">G</span>
             <span>Continue with Google</span>
           </button>
-
-          <p className="auth-switch">
-            Don't have an account?
-            <Link to="/signup">Create account</Link>
-          </p>
         </section>
 
         <Link to="/" className="back-home">
