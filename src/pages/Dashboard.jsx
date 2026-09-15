@@ -366,7 +366,9 @@ function Dashboard() {
                 const pageText =
                   document.pages !== undefined && document.pages !== null
                     ? `${document.pages} pages`
-                    : "Processing";
+                    : document.indexed
+                      ? "Indexed"
+                      : "Processing";
                 const updatedText = document.updated || "Just now";
 
                 return (

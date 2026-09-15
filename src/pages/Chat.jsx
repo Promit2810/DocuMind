@@ -1,6 +1,6 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import ThemeToggle from "../components/ThemeToggle";
 import { API_BASE_URL, clearAuth, getStoredUser, getToken } from "../utils/auth";
@@ -85,7 +85,7 @@ function Chat() {
   // ================= CHAT HISTORY =================
   const CHAT_HISTORY_KEY = "documind_chat_history";
 
-  const getChatHistory = (filename) => {
+  const getChatHistory = useCallback((filename) => {
     if (!filename) return [];
     const key = `${currentUser?.id || "guest"}_${filename}`;
     try {
@@ -100,9 +100,9 @@ function Chat() {
       console.error("Failed to load chat history:", error);
       return [];
     }
-  };
+  }, [currentUser?.id]);
 
-  const saveChatHistory = (filename, chatMessages) => {
+  const saveChatHistory = useCallback((filename, chatMessages) => {
     if (!filename) return;
     const key = `${currentUser?.id || "guest"}_${filename}`;
     try {
@@ -119,7 +119,7 @@ function Chat() {
     } catch (error) {
       console.error("Failed to save chat history:", error);
     }
-  };
+  }, [currentUser?.id]);
 
   const [question, setQuestion] = useState("");
   const [messages, setMessages] = useState([]);
@@ -136,12 +136,12 @@ function Chat() {
     const history = getChatHistory(documentName);
     setMessages(history);
     setQuestion("");
-  }, [documentName]);
+  }, [documentName, getChatHistory]);
 
   useEffect(() => {
     if (!documentName) return;
     saveChatHistory(documentName, messages);
-  }, [messages, documentName]);
+  }, [messages, documentName, saveChatHistory]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({
@@ -157,7 +157,7 @@ function Chat() {
     cleaned = cleaned.replace(/\n/g, "\n");
     cleaned = cleaned.replace(/\r/g, "\n");
     cleaned = cleaned.replace(/\t/g, "    ");
-    cleaned = cleaned.replace(/\"/g, '"');
+    cleaned = cleaned.replace(/"/g, '"');
     cleaned = cleaned.replace(/â€“/g, "–");
     cleaned = cleaned.replace(/â€”/g, "—");
     cleaned = cleaned.replace(/â€™/g, "’");
