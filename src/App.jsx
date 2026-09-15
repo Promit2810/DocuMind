@@ -8,19 +8,10 @@ import {
   useLocation,
   useNavigate,
 } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 
-import Login from "./pages/Login";
-import Signup from "./pages/Signup";
-import Dashboard from "./pages/Dashboard";
-import Documents from "./pages/Documents";
-import Chat from "./pages/Chat";
-
-import DocumentScene from "./components/DocumentScene";
 import ThemeToggle from "./components/ThemeToggle";
 import { initTheme } from "./utils/theme";
-import FeatureCards from "./components/FeatureCards";
-import RagPipeline from "./components/RagPipeline";
 
 import {
   clearAuth,
@@ -28,6 +19,23 @@ import {
   getStoredUser,
   getToken,
 } from "./utils/auth";
+
+const Login = lazy(() => import("./pages/Login"));
+const Signup = lazy(() => import("./pages/Signup"));
+const Dashboard = lazy(() => import("./pages/Dashboard"));
+const Documents = lazy(() => import("./pages/Documents"));
+const Chat = lazy(() => import("./pages/Chat"));
+const DocumentScene = lazy(() => import("./components/DocumentScene"));
+const FeatureCards = lazy(() => import("./components/FeatureCards"));
+const RagPipeline = lazy(() => import("./components/RagPipeline"));
+
+function LoadingFallback({ compact = false }) {
+  return (
+    <div className={compact ? "loading-fallback loading-fallback-compact" : "loading-fallback"}>
+      <span>Loading DocuMind...</span>
+    </div>
+  );
+}
 
 // =========================
 // AUTH GUARD
@@ -271,7 +279,9 @@ function Landing() {
           </div>
 
           <div className="hero-preview">
-            <DocumentScene />
+            <Suspense fallback={<LoadingFallback compact />}>
+              <DocumentScene />
+            </Suspense>
           </div>
         </section>
 
@@ -297,7 +307,9 @@ function Landing() {
             </p>
           </div>
 
-          <FeatureCards />
+          <Suspense fallback={<LoadingFallback />}>
+            <FeatureCards />
+          </Suspense>
         </section>
 
         {/* ================= HOW IT WORKS ================= */}
@@ -354,7 +366,9 @@ function Landing() {
             </div>
           </div>
 
-          <RagPipeline />
+          <Suspense fallback={<LoadingFallback />}>
+            <RagPipeline />
+          </Suspense>
         </section>
 
         {/* ================= CTA ================= */}
@@ -429,54 +443,56 @@ function App() {
 
   return (
     <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Landing />} />
+      <Suspense fallback={<LoadingFallback />}>
+        <Routes>
+          <Route path="/" element={<Landing />} />
 
-        <Route
-          path="/login"
-          element={
-            <PublicAuthRoute>
-              <Login />
-            </PublicAuthRoute>
-          }
-        />
+          <Route
+            path="/login"
+            element={
+              <PublicAuthRoute>
+                <Login />
+              </PublicAuthRoute>
+            }
+          />
 
-        <Route
-          path="/signup"
-          element={
-            <PublicAuthRoute>
-              <Signup />
-            </PublicAuthRoute>
-          }
-        />
+          <Route
+            path="/signup"
+            element={
+              <PublicAuthRoute>
+                <Signup />
+              </PublicAuthRoute>
+            }
+          />
 
-        <Route
-          path="/dashboard"
-          element={
-            <ProtectedRoute>
-              <Dashboard />
-            </ProtectedRoute>
-          }
-        />
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            }
+          />
 
-        <Route
-          path="/documents"
-          element={
-            <ProtectedRoute>
-              <Documents />
-            </ProtectedRoute>
-          }
-        />
+          <Route
+            path="/documents"
+            element={
+              <ProtectedRoute>
+                <Documents />
+              </ProtectedRoute>
+            }
+          />
 
-        <Route
-          path="/chat"
-          element={
-            <ProtectedRoute>
-              <Chat />
-            </ProtectedRoute>
-          }
-        />
-      </Routes>
+          <Route
+            path="/chat"
+            element={
+              <ProtectedRoute>
+                <Chat />
+              </ProtectedRoute>
+            }
+          />
+        </Routes>
+      </Suspense>
     </BrowserRouter>
   );
 }
