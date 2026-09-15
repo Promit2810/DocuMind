@@ -1,5 +1,6 @@
 import json
 import re
+import threading
 from pathlib import Path
 import os
 from datetime import datetime, timedelta, timezone
@@ -1031,14 +1032,19 @@ def index_missing_uploaded_documents():
 # STARTUP INITIALIZATION
 # =========================================================
 
-# Step 1:
-# Load indexes that already exist.
-load_saved_indexes()
+def initialize_rag_indexes():
+    """Load the RAG catalog after the API is ready to serve requests."""
+    load_saved_indexes()
+    index_missing_uploaded_documents()
 
-# Step 2:
-# Automatically index uploaded files that do not have
-# persistent indexes yet.
-index_missing_uploaded_documents()
+
+@app.on_event("startup")
+def start_rag_initialization():
+    threading.Thread(
+        target=initialize_rag_indexes,
+        name="rag-index-initializer",
+        daemon=True,
+    ).start()
 
 
 # =========================================================

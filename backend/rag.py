@@ -34,7 +34,6 @@ from typing import List
 
 import numpy as np
 import faiss
-from sentence_transformers import SentenceTransformer
 
 
 # ============================================================
@@ -47,6 +46,8 @@ _model = None
 
 
 def get_embedding_model():
+    from sentence_transformers import SentenceTransformer
+
     global _model
 
     if _model is None:
