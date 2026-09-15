@@ -43,7 +43,16 @@ from sentence_transformers import SentenceTransformer
 
 MODEL_NAME = "all-MiniLM-L6-v2"
 
-model = SentenceTransformer(MODEL_NAME)
+_model = None
+
+
+def get_embedding_model():
+    global _model
+
+    if _model is None:
+        _model = SentenceTransformer(MODEL_NAME)
+
+    return _model
 
 
 # ============================================================
@@ -1304,7 +1313,7 @@ def create_embeddings(chunks):
         for chunk in chunks
     ]
 
-    embeddings = model.encode(
+    embeddings = get_embedding_model().encode(
         texts,
         convert_to_numpy=True,
         normalize_embeddings=True,
@@ -1401,7 +1410,7 @@ def retrieve_relevant_chunks(
     # QUESTION EMBEDDING
     # ========================================================
 
-    question_embedding = model.encode(
+    question_embedding = get_embedding_model().encode(
         [question],
         convert_to_numpy=True,
         normalize_embeddings=True,
