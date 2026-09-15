@@ -56,14 +56,21 @@ export async function getCurrentUser() {
     return null;
   }
 
-  const response = await fetch(
-    `${API_BASE_URL}/api/auth/me`,
-    {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 5000);
+
+  let response;
+
+  try {
+    response = await fetch(`${API_BASE_URL}/api/auth/me`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
-    }
-  );
+      signal: controller.signal,
+    });
+  } finally {
+    clearTimeout(timeoutId);
+  }
 
   if (!response.ok) {
     clearAuth();
