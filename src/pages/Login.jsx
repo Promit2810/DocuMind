@@ -110,17 +110,7 @@ export default function Login() {
             </div>
 
             <div className="form-field">
-              <div className="form-label-row">
-                <label htmlFor="login-password">Password</label>
-                <button
-                  type="button"
-                  className="forgot-link"
-                  onClick={() => setError("Password reset is not available yet.")}
-                  disabled={loading}
-                >
-                  Forgot?
-                </button>
-              </div>
+              <label htmlFor="login-password">Password</label>
 
               <input
                 id="login-password"
@@ -150,21 +140,6 @@ export default function Login() {
             </button>
           </form>
 
-          <div className="auth-divider">
-            <span></span>
-            <small>OR</small>
-            <span></span>
-          </div>
-
-          <button
-            type="button"
-            className="google-button"
-            onClick={() => setError("Google authentication is not connected yet.")}
-            disabled={loading}
-          >
-            <span className="google-icon">G</span>
-            <span>Continue with Google</span>
-          </button>
         </section>
 
         <Link to="/" className="back-home">

@@ -172,21 +172,6 @@ export default function Signup() {
             </button>
           </form>
 
-          <div className="auth-divider">
-            <span></span>
-            <small>OR</small>
-            <span></span>
-          </div>
-
-          <button
-            type="button"
-            className="google-button"
-            onClick={() => setError("Google authentication is not connected yet.")}
-            disabled={loading}
-          >
-            <span className="google-icon">G</span>
-            <span>Continue with Google</span>
-          </button>
         </section>
 
         <Link to="/" className="back-home">

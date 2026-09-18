@@ -37,6 +37,118 @@ function LoadingFallback({ compact = false }) {
   );
 }
 
+const designDirections = [
+  {
+    number: "01",
+    name: "The Research Desk",
+    className: "preview-research",
+    eyebrow: "FIELD NOTES / DOCUMENT INTELLIGENCE",
+    title: "Find the sentence that matters.",
+    detail: "A warm, tactile workspace for serious reading and research.",
+    action: "Open the desk",
+  },
+  {
+    number: "02",
+    name: "The Quiet Utility",
+    className: "preview-utility",
+    eyebrow: "DOCUMIND / SEARCH",
+    title: "Ask your documents directly.",
+    detail: "A clear product-first interface that gets out of the way.",
+    action: "Try the search",
+  },
+  {
+    number: "03",
+    name: "The Case File",
+    className: "preview-casefile",
+    eyebrow: "CASE 014 / SOURCE REVIEW",
+    title: "Every answer leaves a trail.",
+    detail: "A grounded investigation aesthetic built around evidence and citations.",
+    action: "Review the finding",
+  },
+  {
+    number: "04",
+    name: "The Editorial Magazine",
+    className: "preview-editorial",
+    eyebrow: "THE DOCUMENT ISSUE / 2026",
+    title: "The long read, made searchable.",
+    detail: "A confident editorial layout with rhythm, scale, and generous whitespace.",
+    action: "Read the issue",
+  },
+  {
+    number: "05",
+    name: "The Library Catalogue",
+    className: "preview-library",
+    eyebrow: "ARCHIVE / 2,408 SOURCES",
+    title: "A better way into your own library.",
+    detail: "A trustworthy archive system where metadata and provenance lead.",
+    action: "Browse the archive",
+  },
+  {
+    number: "06",
+    name: "The Annotated Manuscript",
+    className: "preview-manuscript",
+    eyebrow: "ANNOTATION / LIVE SOURCE MAP",
+    title: "Read less. Understand more.",
+    detail: "A distinctive manuscript view where answers connect back to the page.",
+    action: "Trace an answer",
+  },
+];
+
+function DesignPreviews() {
+  return (
+    <div className="design-previews-page">
+      <header className="design-previews-header">
+        <Link to="/" className="logo">
+          <span className="logo-dot"></span>
+          <span>DocuMind</span>
+        </Link>
+        <Link to="/" className="preview-back">Back to landing page</Link>
+      </header>
+
+      <main className="design-previews-main">
+        <div className="design-previews-intro">
+          <span className="section-tag">DIRECTION STUDY / 06</span>
+          <h1>Six ways to make<br /><em>documents feel human.</em></h1>
+          <p>These are visual directions, not templates. Each one gives DocuMind a different character while keeping the product clear.</p>
+        </div>
+
+        <div className="design-preview-grid">
+          {designDirections.map((direction) => (
+            <article className={`design-preview-card ${direction.className}`} key={direction.number}>
+              <div className="design-preview-label">
+                <span>{direction.number}</span>
+                <strong>{direction.name}</strong>
+              </div>
+              <div className="design-preview-window">
+                <div className="preview-window-nav">
+                  <span className="preview-window-mark">●</span>
+                  <span>{direction.eyebrow}</span>
+                  <span className="preview-window-menu">•••</span>
+                </div>
+                <div className="preview-window-content">
+                  <span className="preview-window-kicker">{direction.eyebrow}</span>
+                  <h2>{direction.title}</h2>
+                  <p>{direction.detail}</p>
+                  <button type="button">{direction.action} <span>↗</span></button>
+                </div>
+                <div className="preview-document-sheet">
+                  <span className="preview-sheet-title">Q4 research notes</span>
+                  <span className="preview-sheet-line"></span>
+                  <span className="preview-sheet-line short"></span>
+                  <span className="preview-sheet-highlight"></span>
+                  <span className="preview-sheet-line"></span>
+                  <span className="preview-sheet-line medium"></span>
+                  <span className="preview-sheet-citation">SOURCE / 04</span>
+                </div>
+              </div>
+            </article>
+          ))}
+        </div>
+      </main>
+    </div>
+  );
+}
+
 // =========================
 // AUTH GUARD
 // =========================
@@ -240,7 +352,7 @@ function Landing() {
         <section className="hero">
           <div className="hero-content">
             <div className="hero-kicker">
-              DOCUMENT INTELLIGENCE / 01
+              CASE 014 / SOURCE REVIEW
             </div>
 
             <h1>
@@ -293,7 +405,7 @@ function Landing() {
         >
           <div className="section-heading">
             <span className="section-tag">
-              CAPABILITIES / 02
+              EVIDENCE / 02
             </span>
 
             <h2>
@@ -320,7 +432,7 @@ function Landing() {
         >
           <div className="section-heading">
             <span className="section-tag">
-              HOW IT WORKS / 03
+              METHOD / 03
             </span>
 
             <h2>
@@ -379,7 +491,7 @@ function Landing() {
         >
           <div className="cta-content">
             <span className="section-tag">
-              START EXPLORING / 04
+              OPEN CASE / 04
             </span>
 
             <h2>
@@ -446,6 +558,7 @@ function App() {
       <Suspense fallback={<LoadingFallback />}>
         <Routes>
           <Route path="/" element={<Landing />} />
+          <Route path="/design-previews" element={<DesignPreviews />} />
 
           <Route
             path="/login"
